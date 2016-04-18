@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var request = require("request");
-var db = require('../db');
+// var db = require('../db');
 
-var Query = db.model('Query', {
-	keyword: String,
-	created: { type: Date, default: new Date() }
-});
+// var Query = db.model('Query', {
+// 	keyword: String,
+// 	created: { type: Date, default: new Date() }
+// });
 
 
 /* GET home page. */
@@ -17,8 +17,8 @@ router.post('/api', function(req,res) {
 	var json = JSON.parse(JSON.stringify(req.body));
 	var data = json.keyword
 	// console.log(data)
-	var q = new Query({ keyword: data });
-	q.save();
+	// var q = new Query({ keyword: data });
+	// q.save();
 	// console.log(q)
 
 	var s = Math.floor((Math.random()* 10) + 1);
