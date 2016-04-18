@@ -35,17 +35,17 @@ $(document).ready(function(){
 		           });
 		           $('#wrapper').append('</ul>')
 		           $('input[name="text_search"]').val('');
-	           	    var a = audiojs.createAll();
+	           	    // var a = audiojs.createAll();
 	           	    // auto next bai hat
-	          //  	    var a = audiojs.createAll({
-			        //   trackEnded: function() {
-			        //     var next = $('ul li.playing').next();
-			        //     if (!next.length) next = $('ul li').first();
-			        //     next.addClass('playing').siblings().removeClass('playing');
-			        //     audio.load($('a', next).attr('data-src'));
-			        //     audio.play();
-			        //   }
-			        // });
+	           	    var a = audiojs.createAll({
+			          trackEnded: function() {
+			            var next = $('ul li.playing').next();
+			            if (!next.length) next = $('ul li').first();
+			            next.addClass('playing').siblings().removeClass('playing');
+			            audio.load($('a', next).attr('data-src'));
+			            audio.play();
+			          }
+			        });
 				    var audio = a[0];
 				    $('ul li').click(function(e) {
 				      e.preventDefault();
@@ -59,7 +59,7 @@ $(document).ready(function(){
 				      audio.load($('a', this).attr('data-src'));
 				      audio.play();
 				    });
-				    $('body').append('<div id="pagination"></div>');
+				    $('body').append('<div id="pagination" class="uk-width-1-1 uk-container-center"></div>');
 				    $('#pagination').customPaginate({
 				        itemsToPaginate: 'li',
 				    });

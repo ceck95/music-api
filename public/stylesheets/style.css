@@ -21,7 +21,10 @@ a {
     text-decoration: none;
     color:black;
   }
-
+  #pagination{
+    position: fixed;
+    top:450px;
+  }
  /*     
       ol { padding: 0px; margin: 0px; list-style:none; color: #ccc; width: 400px; font-size: 0.9em; }
       ol li { position: relative; margin: 0px; padding: 9px 2px 10px; border-bottom: 1px solid #ccc; cursor: pointer; }
