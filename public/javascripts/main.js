@@ -18,11 +18,12 @@ $(document).ready(function(){
 		var keyword = $('input[name="text_search"]').val()
 		var data = {};
 		data.keyword = keyword;
+		var url = window.location.href;
 		$.ajax({
 		        type: "POST",
 		        data: JSON.stringify(data),
 		        contentType: 'application/json',
-		        url: 'http://localhost:3000/api',
+		        url: url+'/api',
 		        success:function(data)
 		        {
 		        	$('#wrapper').append('<strong><div class="detail">No select song</div></strong>');
@@ -40,8 +41,14 @@ $(document).ready(function(){
 	           	    var a = audiojs.createAll({
 			          trackEnded: function() {
 			            var next = $('ul li.playing').next();
+			            $("ul li.playing strong.text-play").remove();
+				      	$("ul li.playing a").removeClass('color-play')
 			            if (!next.length) next = $('ul li').first();
 			            next.addClass('playing').siblings().removeClass('playing');
+			            var detail = $("ul li.playing a").text();
+				      	$('.detail').text(detail);
+			            $("ul li.playing a").addClass('color-play')
+				      	$("ul li.playing").append("<strong class='text-play'> (Playing) </strong>")
 			            audio.load($('a', next).attr('data-src'));
 			            audio.play();
 			          }
