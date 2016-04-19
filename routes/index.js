@@ -11,7 +11,7 @@ var request = require("request");
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Music API' });
+  res.render('index', { title: 'music.nhutuit.com' });
 });
 router.post('/api', function(req,res) {
 	var json = JSON.parse(JSON.stringify(req.body));
@@ -68,12 +68,29 @@ router.post('/api', function(req,res) {
 	});
 
 });
-router.post('/endpoint', function(req, res){
-	var obj = {};
-	console.log('body: ' + JSON.stringify(req.body));
-	res.send(req.body);
+router.get('/search/:textSearch',function(req,res){
+	var nameSearch = req.params.textSearch;
+	var s = Math.floor((Math.random()*10)+1);
+	var options = {method: 'GET',
+
+	url: 'http://jginggong.nhutuit.com/jOut.ashx',
+	qs:
+	{
+		code: s,
+		k: nameSearch,
+		h:'nhaccuatui.com'
+	} 
+
+};
+request(options,function(error,response,body){
+	if (error) throw new Error(error);
+	else{
+		res.setHeader('Content-Type', 'application/json');
+		res.send(body);
+	}
 });
 
+});
 
 
 module.exports = router;
