@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	$('form').submit(function(e){
+	$('#1').submit(function(e){
 		e.preventDefault();
 		if($('input[name="text_search"]').val()==''){
 			$('div#a').remove();
@@ -77,6 +77,33 @@ $(document).ready(function(){
 		        }
 		    });
 		}
+	});
+	$("#2").submit(function(e){
+		e.preventDefault();
+		$('#2 input[type="submit"]').val('Loading');
+		var keyword = $('#2 input[name="text_search"]').val()
+		var data = {};
+		data.name = keyword;
+		console.log(data);
+		var url = window.location.href;
+		$.ajax({
+			type: "POST",
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			url: url+"apimv",
+			success: function(data){
+				console.log(data);
+				var array = JSON.parse(data);
+				$('#wrapper').append('<ul class="uk-list uk-list-line">');
+				$.each(array,function(index,value){
+					$('ul').append('<li><strong>'+index+'.</strong> <img src='+value.ImageMV+'>'+value.TenMV+' - '+value.CaSi+'<a href="'+value.LinkMV+'">==>Xem video</a><span class="uk-badge uk-float-right">Detail</span></li>');
+				});
+				$('#wrapper').append('</ul>');
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
 	});
 
 });
