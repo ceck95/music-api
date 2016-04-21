@@ -137,7 +137,7 @@ request(options,function(error,response,body){
 		  	var dodai = url.length;
 		  	var code = url.substring(kitu+1,dodai);
 		  	var urlhost = req.protocol + '://' + req.get('host');
-		    return urlhost+"/"+code;
+		    return urlhost+"/xemvideo/"+code;
 		  },
 		});
 		}).done(function (items) {
