@@ -3,6 +3,37 @@ var router = express.Router();
 var request = require("request");
 var cheerio = require('cheerio');
 var htmlToJson = require('html-to-json');
+// var $ = require('jQuery');
+//how to use jquery
+var jsdom = require("jsdom");
+// (function () {
+//   'use strict';
+// jsdom.env({
+//   url: "http://news.ycombinator.com/",
+//   scripts: ["http://code.jquery.com/jquery.js"],
+//   done: function (err, window) {
+//     var $ = window.$;
+//     console.log("HN Links");
+//     // $("td.title:not(:last) a").each(function() {
+//     //   console.log(" -", $(this).text());
+//     // });
+//   }
+// });
+//end
+//   var env = require('jsdom').env
+//     , html = '<html><body><h1>Hello World!</h1><p class="hello">Heya Big World!</body></html>'
+//     ;
+
+//   // first argument can be html string, filename, or url
+//   env(html, function (errors, window) {
+//     console.log(errors);
+
+//     var $ = require('jquery')(window)
+//       ;
+
+//     console.log($('.hello').text());
+//   });
+// }());
 // var db = require('../db');
 
 // var Query = db.model('Query', {
@@ -97,7 +128,7 @@ request(options,function(error,response,body){
 
 router.get('/mv',function(req,res){
 	var tenmv = req.query.tenmv;
-	console.log(tenmv);
+	// console.log(tenmv);
 	// var s = Math.floor((Math.random()*10)+1);
 	var options = {method: 'GET',
 	headers: 
@@ -117,34 +148,121 @@ request(options,function(error,response,body){
 	else{
 		// res.setHeader('Content-Type', 'application/json');
 		var $ = cheerio.load(body);
-		var content = $('.search').html();
-		htmlToJson.parse(content, function () {
-		  return this.map('.row', {
-		  'TenMV': function ($name) {	
-		    return $name.find('.txt-80 a').text();
-		  },
-		  'CaSi': function ($cs) {	
-		    return $cs.find('.txt-80 img').attr('alt');
-		  },
-		 'ImageMV': function ($cs) {
-		    return $cs.find('.img-80 a img').attr('src');
-		  },
-		  'LinkMV': function ($cs) {	
-		  	var vitri = $cs.find('.img-80 a').attr('href');
-		  	var len = vitri.length;;
-		  	var url = vitri.substring(30,len-5);
-		  	var kitu = url.indexOf(".");
-		  	var dodai = url.length;
-		  	var code = url.substring(kitu+1,dodai);
-		  	var urlhost = req.protocol + '://' + req.get('host');
-		    return urlhost+"/xemvideo/"+code;
-		  },
-		});
-		}).done(function (items) {
-		  res.json(items); 
-		}, function (err) {
-		  res.json({'status':'Not found'});
-		});
+		var a = $('.note-Result').text();
+		var c = a.indexOf("mv");
+		var bd = a.indexOf("/");
+		var b = a.substring(bd+1,c);
+		// console.log(b)
+		var somv = parseInt(b);
+		// console.log(somv);
+		if(somv <= 10){
+			var options = {
+				method: "GET",
+				url: "http://m.nhaccuatui.com/tim-kiem/mv",
+				qs: {
+					q: tenmv
+				}
+			}
+			request(options,function(error,response,body){
+				if (error) throw new Error(error);
+				else{
+					var content = $('.search').html();
+					htmlToJson.parse(content, function () {
+					  return this.map('.row', {
+					  'TenMV': function ($name) {	
+					    return $name.find('.txt-80 a').text();
+					  },
+					  'CaSi': function ($cs) {	
+					    return $cs.find('.txt-80 img').attr('alt');
+					  },
+					 'ImageMV': function ($cs) {
+					    return $cs.find('.img-80 a img').attr('src');
+					  },
+					  'Listener': function ($cs){
+					  	return $cs.find('.txt-80 span').text();
+					  },
+					  'LinkMV': function ($cs) {	
+					  	var vitri = $cs.find('.img-80 a').attr('href');
+					  	var len = vitri.length;;
+					  	var url = vitri.substring(30,len-5);
+					  	var kitu = url.indexOf(".");
+					  	var dodai = url.length;
+					  	var code = url.substring(kitu+1,dodai);
+					  	var urlhost = req.protocol + '://' + req.get('host');
+					    return urlhost+"/xemvideo/"+code;
+					  },
+					});
+					}).done(function (items) {
+					  res.json(items); 
+					}, function (err) {
+					  res.json({'status':'Not found'});
+					});
+					// res.send(content);
+				}
+			});
+		}
+		else{
+			var numberpage = 3;
+			var html = [];
+			for(var i = 1 ;i<= numberpage ; i++){
+				// console.log(i);
+				var options = {
+					method: "GET",
+					url: "http://m.nhaccuatui.com/tim-kiem/mv",
+					qs:{
+						q: tenmv,
+						page: i
+					}
+				}
+				function callback (error,response,body){
+					if (error) throw new Error(error);
+					else{
+						var content = $('.search').html();
+						return content;
+					}
+				}
+				var tag = request(options,callback);
+				console.log(callback());
+				html.push(callback());
+			}
+			var content;
+			for (var i = 0 ; i< html.length ; i++){
+				content += html[i];
+			}
+			// var content = html[0]+html[1];
+			htmlToJson.parse(content, function () {
+			  return this.map('.row', {
+			  'TenMV': function ($name) {	
+			    return $name.find('.txt-80 a').text();
+			  },
+			  'CaSi': function ($cs) {	
+			    return $cs.find('.txt-80 img').attr('alt');
+			  },
+	  		 'Listener': function ($cs){
+			  	var listener =  $cs.find('.txt-80 span').text();
+			  	var sum = listener.trim();
+			  	return sum;
+			  },
+			 'ImageMV': function ($cs) {
+			    return $cs.find('.img-80 a img').attr('src');
+			  },
+			  'LinkMV': function ($cs) {	
+			  	var vitri = $cs.find('.img-80 a').attr('href');
+			  	var len = vitri.length;;
+			  	var url = vitri.substring(30,len-5);
+			  	var kitu = url.indexOf(".");
+			  	var dodai = url.length;
+			  	var code = url.substring(kitu+1,dodai);
+			  	var urlhost = req.protocol + '://' + req.get('host');
+			    return urlhost+"/xemvideo/"+code;
+			  },
+			});
+			}).done(function (items) {
+			  res.json(items); 
+			}, function (err) {
+			  res.json({'status':'Not found'});
+			});
+		}
 
 	}
 });
