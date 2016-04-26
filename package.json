@@ -8,7 +8,6 @@
   "dependencies": {
     "body-parser": "~1.0.0",
     "cheerio": "^0.20.0",
-    "contextify": "^0.1.15",
     "cookie-parser": "~1.0.1",
     "debug": "~0.7.4",
     "dysf.utils": "^0.1.2",
@@ -18,7 +17,6 @@
     "html-to-json": "^0.6.0",
     "jQuery": "^1.7.4",
     "jquery": "^2.2.3",
-    "jsdom": "^3.1.2",
     "mongoose": "^4.4.12",
     "morgan": "~1.0.0",
     "node-json2html": "^1.0.0",
