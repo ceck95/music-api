@@ -44,7 +44,7 @@ var jsdom = require("jsdom");
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'music.nhutuit.com' });
+  res.render('index', { title: 'music.nhutuit.com - NhutUIT' });
 });
 router.post('/api', function(req,res) {
 	var json = JSON.parse(JSON.stringify(req.body));
