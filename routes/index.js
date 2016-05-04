@@ -278,7 +278,6 @@ router.post('/apimv',function(req,res){
 	// console.log(url);
 	var data = JSON.parse(JSON.stringify(req.body));
 	var namevideo = data.name;
-	console.log(namevideo);
 	var options = {
 		method: 'GET',
 		url: url+'/mv',
@@ -290,6 +289,24 @@ router.post('/apimv',function(req,res){
 		if (error) throw new Error(error);
 		else{
 			res.send(body)
+		}
+	});
+});
+router.get('/searchmv/:textSearch',function(req,res){
+	var url = req.protocol + '://' + req.get('host');
+	var nameSearch = req.params.textSearch;
+	var options = {method: 'GET',
+		url: url+'/mv',
+		qs:
+		{
+			tenmv: nameSearch,
+		} 
+	};
+	request(options,function(error,response,body){
+		if (error) throw new Error(error);
+		else{
+			res.setHeader('Content-Type', 'application/json');
+			res.send(body);
 		}
 	});
 });
