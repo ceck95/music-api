@@ -419,6 +419,7 @@ router.get("/download/song/:songName",function(req,res){
 	request(options,function(error,response,body){
 			if (error) throw new Error(error);
 			else{
+				var data = JSON.parse(body);
 				if(data.error_message != 'Success'){
 						var options = {
 							method: "GET",
@@ -450,7 +451,6 @@ router.get("/download/song/:songName",function(req,res){
 								}
 						});
 				}else{
-					var data = JSON.parse(body);
 					res.redirect(data.data.stream_url);
 				}
 			}
