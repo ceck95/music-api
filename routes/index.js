@@ -355,8 +355,31 @@ router.get('/mp3',function(req,res){
 					  	var bd = gettext.indexOf('.');
 					  	var link = gettext.substring(bd+1,gettext.length-5);
 					  	var url = req.protocol + '://' + req.get('host');
-						return url+'/download/song/'+link;
-						// return url+'/bai-hat/'+gettext;
+						return url+'/download/song/'+gettext;
+						// return url+'test/bai-hat/'+gettext;
+
+						// var async = require('asyncawait/async');
+						// var await = require('asyncawait/await');
+
+						// var data_test = async (function() {
+						// 	function getData() {
+						// 		return new Promise(function(resolve, reject) {
+						// 			var options2 = {
+						// 				method:"GET",
+						// 				url: url+"/test/bai-hat/"+gettext
+						// 			}
+						// 			request(options2, function(error, response, body) {
+						// 				quote = body;
+						// 				resolve(quote);
+						// 			})
+						// 		});
+						// 	}
+
+						// 	return await getData();
+						// });
+
+						// return data_test;
+
 					  },
 					});
 					}).done(function (items) {
@@ -388,16 +411,50 @@ router.get('/mp3',function(req,res){
 });
 router.get("/download/song/:songName",function(req,res){
 	var songname = req.params.songName;
+	var getid = songname.substring(songname.indexOf('.')+1,songname.length - 5);
 	var options = {
 		method: "GET",
-		url:"http://www.nhaccuatui.com/download/song/"+songname
+		url:"http://www.nhaccuatui.com/download/song/"+getid
 	}
 	request(options,function(error,response,body){
 			if (error) throw new Error(error);
 			else{
 				var data = JSON.parse(body);
 				res.setHeader('Content-Type', 'application/json');
-				res.redirect(data.data.stream_url);
+				if(data.error_message == 'Theo yêu cầu của đơn vị sở hữu bản quyền, bài hát này chưa được phép download!'){
+						var options = {
+							method: "GET",
+							url:"http://www.nhaccuatui.com/bai-hat/"+songname
+						}
+						request(options,function(error,response,body){
+								if (error) throw new Error(error);
+								else{
+									var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key1=');
+									var test2 = body.indexOf('player.peConfig.defaultIndex');
+									var text = body.substring(test,test2);
+									var gettext = text.indexOf('\n');
+									var link = text.substring(0,gettext-2);
+									var options = {
+										method:"GET",
+										url:link
+									};
+									request(options,function(error,response,body){
+										if (error) throw new Error(error);
+										else{
+											var $ = cheerio.load(body);
+											var resval = $('location').html();
+											var getlink = resval.substring(resval.indexOf('<!--[CDATA['),
+												resval.indexOf(']]-->'))
+											var getlinkmp3 = getlink.substring(11,getlink.length);
+											res.redirect(getlinkmp3)
+										}
+									});
+								}
+						});
+				}else{
+					var data = JSON.parse(body);
+					res.redirect(data.data.stream_url);
+				}
 			}
 	});
 });
