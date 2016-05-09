@@ -433,19 +433,19 @@ router.get("/download/song/:songName",function(req,res){
 									var text = body.substring(test,test2);
 									var gettext = text.indexOf('\n');
 									var link = text.substring(0,gettext-2);
-									var options = {
+									var options2 = {
 										method:"GET",
-										url:link
+										url: link
 									};
-									request(options,function(error,response,body){
+									request(options2,function(error,response,body){
 										if (error) throw new Error(error);
 										else{
 											var $ = cheerio.load(body);
 											var resval = $('location').html();
 											var getlink = resval.substring(resval.indexOf('<!--[CDATA['),
-												resval.indexOf(']]-->'))
+												resval.indexOf(']]-->'));
 											var getlinkmp3 = getlink.substring(11,getlink.length);
-											res.redirect(getlinkmp3)
+											res.redirect(getlinkmp3);
 										}
 									});
 								}
