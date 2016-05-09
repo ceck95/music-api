@@ -7,6 +7,7 @@ var htmlToJson = require('html-to-json');
 //how to use jquery
 var jsdom = require("jsdom");
 var rp = require('request-promise');
+var HttpsProxyAgent = require('http-proxy-agent');
 // (function () {
 //   'use strict';
 // jsdom.env({
@@ -421,10 +422,16 @@ router.get("/download/song/:songName",function(req,res){
 			else{
 				var data = JSON.parse(body);
 				if(data.error_message != 'Success'){
+						var agent = new HttpsProxyAgent('http://203.162.69.22:3128');
 						var options = {
 							method: "GET",
-							url:"http://m.nhaccuatui.com/bai-hat/"+songname
-						}
+							url:"http://m.nhaccuatui.com/bai-hat/"+songname,
+							agent: agent,
+							timeout: 10000,
+							followRedirect: true,
+							maxRedirects: 10,
+							body: "name=john"
+						};
 						request(options,function(error,response,body){
 								if (error) throw new Error(error);
 								else{
