@@ -419,8 +419,6 @@ router.get("/download/song/:songName",function(req,res){
 	request(options,function(error,response,body){
 			if (error) throw new Error(error);
 			else{
-				var data = JSON.parse(body);
-				res.setHeader('Content-Type', 'application/json');
 				if(data.error_message != 'Success'){
 						var options = {
 							method: "GET",
