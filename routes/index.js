@@ -421,7 +421,7 @@ router.get("/download/song/:songName",function(req,res){
 			else{
 				var data = JSON.parse(body);
 				res.setHeader('Content-Type', 'application/json');
-				if(data.error_message == 'Theo yêu cầu của đơn vị sở hữu bản quyền, bài hát này chưa được phép download!'){
+				if(data.error_message != 'Success'){
 						var options = {
 							method: "GET",
 							url:"http://www.nhaccuatui.com/bai-hat/"+songname
