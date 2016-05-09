@@ -32,7 +32,7 @@ $(document).ready(function(){
 		        	var array = JSON.parse(data);
 		           $.each(array,function(index,value){
 		           	var indexOf = index+1
-		           		$('ul').append('<li><strong>'+indexOf+'.</strong> <a href="#" data-src='+value.UrlJunDownload+'>'+value.Title+' - '+value.Artist+'</a><span class="uk-badge uk-float-right">Detail</span></li>');
+		           		$('ul').append('<li><strong>'+indexOf+'.</strong> <a href="#" data-src='+value.LinkSong+'>'+value.TenSong+' - '+value.CaSi+'</a><span class="uk-badge uk-float-right">Detail</span></li>');
 		           });
 		           $('#wrapper').append('</ul>')
 		           $('input[name="text_search"]').val('');

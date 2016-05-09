@@ -23,6 +23,7 @@
     "node-json2html": "^1.0.0",
     "node-soundcloud": "0.0.5",
     "request": "^2.71.0",
+    "request-promise": "^3.0.0",
     "soundcloud-node": "0.0.10",
     "soundclouder": "^0.8.1",
     "static-favicon": "~1.0.0"

@@ -6,6 +6,7 @@ var htmlToJson = require('html-to-json');
 // var $ = require('jQuery');
 //how to use jquery
 var jsdom = require("jsdom");
+var rp = require('request-promise');
 // (function () {
 //   'use strict';
 // jsdom.env({
@@ -53,14 +54,11 @@ router.post('/api', function(req,res) {
 	// var q = new Query({ keyword: data });
 	// q.save();
 	// console.log(q)
-
-	var s = Math.floor((Math.random()* 10) + 1);
+	var urlhost = req.protocol + '://' + req.get('host');
 	var options = { method: 'GET',
-	  url: 'http://jginggong.nhutuit.com/jOut.ashx',
+	  url: urlhost+"/mp3",
 	  qs: 
-	   { code: s,
-	     k: data,
-	     h: 'nhaccuatui.com' 
+	   { tensong: data, 
 	 	}
 	 };
 	request(options, function (error, response, body) {
@@ -103,33 +101,26 @@ router.post('/api', function(req,res) {
 });
 router.get('/search/:textSearch',function(req,res){
 	var nameSearch = req.params.textSearch;
-	var s = Math.floor((Math.random()*10)+1);
-	var options = {method: 'GET',
-
-	url: 'http://jginggong.nhutuit.com/jOut.ashx',
-	qs:
-	{
-		code: s,
-		k: nameSearch,
-		h:'nhaccuatui.com'
-	} 
-
-};
-request(options,function(error,response,body){
-	if (error) throw new Error(error);
-	else{
-		res.setHeader('Content-Type', 'application/json');
-		res.send(body);
-	}
-});
+	var urlhost = req.protocol + '://' + req.get('host');
+	var options = { method: 'GET',
+	  url: urlhost+"/mp3",
+	  qs: 
+	   { tensong: nameSearch, 
+	 	}
+	 };
+	request(options,function(error,response,body){
+		if (error) throw new Error(error);
+		else{
+			res.setHeader('Content-Type', 'application/json');
+			res.send(body);
+		}
+	});
 
 });
 
 
 router.get('/mv',function(req,res){
 	var tenmv = req.query.tenmv;
-	// console.log(tenmv);
-	// var s = Math.floor((Math.random()*10)+1);
 	var options = {method: 'GET',
 	headers: 
 	{
@@ -146,15 +137,12 @@ router.get('/mv',function(req,res){
 request(options,function(error,response,body){
 	if (error) throw new Error(error);
 	else{
-		// res.setHeader('Content-Type', 'application/json');
 		var $ = cheerio.load(body);
 		var a = $('.note-Result').text();
 		var c = a.indexOf("mv");
 		var bd = a.indexOf("/");
 		var b = a.substring(bd+1,c);
-		// console.log(b)
 		var somv = parseInt(b);
-		// console.log(somv);
 		if(somv <= 10){
 			var options = {
 				method: "GET",
@@ -197,7 +185,6 @@ request(options,function(error,response,body){
 					}, function (err) {
 					  res.json({'status':'Not found'});
 					});
-					// res.send(content);
 				}
 			});
 		}
@@ -205,7 +192,6 @@ request(options,function(error,response,body){
 			var numberpage = 3;
 			var html = [];
 			for(var i = 1 ;i<= numberpage ; i++){
-				// console.log(i);
 				var options = {
 					method: "GET",
 					url: "http://m.nhaccuatui.com/tim-kiem/mv",
@@ -222,14 +208,12 @@ request(options,function(error,response,body){
 					}
 				}
 				var tag = request(options,callback);
-				console.log(callback());
 				html.push(callback());
 			}
 			var content;
 			for (var i = 0 ; i< html.length ; i++){
 				content += html[i];
 			}
-			// var content = html[0]+html[1];
 			htmlToJson.parse(content, function () {
 			  return this.map('.row', {
 			  'TenMV': function ($name) {	
@@ -309,5 +293,156 @@ router.get('/searchmv/:textSearch',function(req,res){
 			res.send(body);
 		}
 	});
+});
+router.get('/mp3',function(req,res){
+	var tensong = req.query.tensong;
+			var numberpage = 3;
+			var html = [];
+
+			(function next(page) {
+				if (page == numberpage + 1) {
+					var content = html.join(' ');
+					// var $ = cheerio.load(content);
+					// var arraylink = [];
+					// console.log($('.bgmusic').length)
+					// $('.bgmusic').each(function(i, elem) {
+					//   	var text = $(this).find('h3 a').attr('href');
+					//   	var gettext = text.substring(32,text.length);
+					//   	var bd = gettext.indexOf('.');
+					//   	var link = gettext.substring(bd+1,gettext.length-5);
+					//   	var url = req.protocol + '://' + req.get('host');
+					//   	arraylink[i] = url+'/bai-hat/'+gettext;
+
+					// });
+					// console.log( arraylink.length);
+					// var html2 = [];
+					// (function tiep(num){
+					// 	if(num == arraylink.length){
+					// 		var content2 = html2.join(' ');
+					// 		res.send(content2);
+					// 	}
+					// 	else{
+					// 	var options1 = {
+					// 		method:"GET",
+					// 		url:arraylink[num]
+					// 	}
+					// 	rp(options1).then(function (body) {
+					// 		console.log(num);
+					//        html2.push(body);
+					//        tiep(num + 1);
+					//     })
+					//     .catch(function (err) {
+					//         console.log(err);
+					//     });
+					// 	}
+					// })(0);
+					htmlToJson.parse(content, function () {
+					  return this.map('.bgmusic ', {
+					  'TenSong': function ($name) {	
+					    return $name.find('h3 a').text();
+					  },
+					  'CaSi': function ($cs) {	
+					    return $cs.find('p img').attr('alt');
+					  },
+			  		 'Listener': function ($cs){
+					  	var listener =  $cs.find('p span img').attr('alt');
+					  	var  getlistener = listener.substring(0,listener.length - 10);
+					  	return getlistener;
+					  },
+					  'LinkSong': function ($cs) {	
+					  	var text = $cs.find('h3 a').attr('href');
+					  	var gettext = text.substring(32,text.length);
+					  	var bd = gettext.indexOf('.');
+					  	var link = gettext.substring(bd+1,gettext.length-5);
+					  	var url = req.protocol + '://' + req.get('host');
+						return url+'/download/song/'+link;
+						// return url+'/bai-hat/'+gettext;
+					  },
+					});
+					}).done(function (items) {
+					  res.json(items); 
+					}, function (err) {
+					  res.json({'status':'Not found'});
+					});
+					return;
+				}
+
+				var options = {
+					method: "GET",
+					url: "http://m.nhaccuatui.com/tim-kiem/bai-hat",
+					qs:{
+						q: tensong,
+						page: page
+					}
+				};
+
+				rp(options).then(function (body) {
+			       html.push(body);
+			       next(page + 1);
+			    })
+			    .catch(function (err) {
+			        console.log(err);
+			    });
+
+			})(1);
+});
+router.get("/download/song/:songName",function(req,res){
+	var songname = req.params.songName;
+	var options = {
+		method: "GET",
+		url:"http://www.nhaccuatui.com/download/song/"+songname
+	}
+	request(options,function(error,response,body){
+			if (error) throw new Error(error);
+			else{
+				var data = JSON.parse(body);
+				res.setHeader('Content-Type', 'application/json');
+				res.redirect(data.data.stream_url);
+			}
+	});
+});
+router.get("/test/bai-hat/:songName",function(req,res){
+	var songname = req.params.songName;
+	var options = {
+		method: "GET",
+		url:"http://www.nhaccuatui.com/bai-hat/"+songname
+	}
+	request(options,function(error,response,body){
+			if (error) throw new Error(error);
+			else{
+				// var data = JSON.parse(body);
+				// res.setHeader('Content-Type', 'application/json');
+				// console.log('test',data.error_message);
+				// res.redirect(data.data.stream_url);
+				var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key1=');
+				var test2 = body.indexOf('player.peConfig.defaultIndex');
+				var text = body.substring(test,test2);
+				var gettext = text.indexOf('\n');
+				var link = text.substring(0,gettext-2);
+				var options = {
+					method:"GET",
+					url:link
+				};
+				request(options,function(error,response,body){
+					if (error) throw new Error(error);
+					else{
+						res.send(body)
+					}
+				});
+			}
+	});
+});
+router.get("/jav",function(req,res){
+	var id = req.query.id;
+	var options = {
+		method: "GET",
+		url: "http://javhd.com/en/id/"+id
+	}
+	rp(options).then(function(body){
+		var $ = cheerio.load(body);
+		var hd = $('#report-body .sample img').attr('src');
+		var gethd = hd.substring(29,hd.indexOf('-p/images'));
+		res.send(gethd);
+	})
 });
 module.exports = router;
