@@ -423,30 +423,14 @@ router.get("/download/song/:songName",function(req,res){
 				if(data.error_message != 'Success'){
 						var options = {
 							method: "GET",
-							url:"http://www.nhaccuatui.com/bai-hat/"+songname
+							url:"http://m.nhaccuatui.com/bai-hat/"+songname
 						}
 						request(options,function(error,response,body){
 								if (error) throw new Error(error);
 								else{
-									var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key1=');
-									var test2 = body.indexOf('player.peConfig.defaultIndex');
-									var text = body.substring(test,test2);
-									var gettext = text.indexOf('\n');
-									var link = text.substring(0,gettext-2);
-									var options2 = {
-										method:"GET",
-										url: link
-									};
-									request(options2,function(error,response,body){
-										if (error) throw new Error(error);
-										else{
-											var $ = cheerio.load(body);
-											var resval = $('location').html();
-											var getlink = resval.substring(resval.indexOf('<!--[CDATA['),resval.indexOf(']]-->'));
-											var getlinkmp3 = getlink.substring(11,getlink.length);
-											res.send('ok');
-										}
-									});
+									var $ = cheerio.load(body);
+									var linkmp3 = $('.download p a').attr('href');
+									res.redirect(linkmp3);
 								}
 						});
 				}else{
