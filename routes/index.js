@@ -442,10 +442,9 @@ router.get("/download/song/:songName",function(req,res){
 										else{
 											var $ = cheerio.load(body);
 											var resval = $('location').html();
-											var getlink = resval.substring(resval.indexOf('<!--[CDATA['),
-												resval.indexOf(']]-->'));
+											var getlink = resval.substring(resval.indexOf('<!--[CDATA['),resval.indexOf(']]-->'));
 											var getlinkmp3 = getlink.substring(11,getlink.length);
-											res.redirect(getlinkmp3);
+											res.send('ok');
 										}
 									});
 								}
