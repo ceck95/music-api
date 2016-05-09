@@ -415,6 +415,7 @@ router.get("/download/song/:songName",function(req,res){
 	var getid = songname.substring(songname.indexOf('.')+1,songname.length - 5);
 	var options = {
 		method: "GET",
+		proxy: 'http://54.169.176.100:80',
 		url:"http://www.nhaccuatui.com/download/song/"+getid
 	}
 	request(options,function(error,response,body){
@@ -422,22 +423,23 @@ router.get("/download/song/:songName",function(req,res){
 			else{
 				var data = JSON.parse(body);
 				if(data.error_message != 'Success'){
-						var agent = new HttpsProxyAgent('http://203.162.69.22:3128');
+						var proxy = 'http://125.212.217.215:80';
+						var agent = new HttpsProxyAgent(proxy);
 						var options = {
+							uri:"http://m.nhaccuatui.com/bai-hat/"+songname,
 							method: "GET",
-							url:"http://m.nhaccuatui.com/bai-hat/"+songname,
-							agent: agent,
-							timeout: 10000,
-							followRedirect: true,
-							maxRedirects: 10,
-							body: "name=john"
+						  	agent: agent,
+						  	timeout: 10000,
+						  	followRedirect: true,
+						  	maxRedirects: 10,
+						  	body: "name=john"
 						};
 						request(options,function(error,response,body){
 								if (error) throw new Error(error);
 								else{
 									var $ = cheerio.load(body);
 									var linkmp3 = $('.download p a').attr('href');
-									res.redirect(linkmp3);
+									res.send(linkmp3);
 								}
 						});
 				}else{
@@ -490,4 +492,20 @@ router.get("/jav",function(req,res){
 		res.send(gethd);
 	})
 });
+router.get("/test",function(req,res){
+	var proxy = 'http://202.167.248.186:80';
+	var agent = new HttpsProxyAgent(proxy);
+	request({
+	  uri: "http://www.nhaccuatui.com/bai-hat/hello-adele.EVx2IlMWOHQz.html",
+	  method: "GET",
+	  agent: agent,
+	  timeout: 10000,
+	  followRedirect: true,
+	  maxRedirects: 10,
+	  body: "name=john"
+	}, function(error, response, body) {
+	    res.send(body);
+	});
+})
+
 module.exports = router;
