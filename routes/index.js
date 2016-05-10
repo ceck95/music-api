@@ -415,7 +415,6 @@ router.get("/download/song/:songName",function(req,res){
 	var getid = songname.substring(songname.indexOf('.')+1,songname.length - 5);
 	var options = {
 		method: "GET",
-		proxy: 'http://54.169.176.100:80',
 		url:"http://www.nhaccuatui.com/download/song/"+getid
 	}
 	request(options,function(error,response,body){
@@ -423,23 +422,35 @@ router.get("/download/song/:songName",function(req,res){
 			else{
 				var data = JSON.parse(body);
 				if(data.error_message != 'Success'){
-						var proxy = 'http://125.212.217.215:80';
-						var agent = new HttpsProxyAgent(proxy);
 						var options = {
-							uri:"http://m.nhaccuatui.com/bai-hat/"+songname,
 							method: "GET",
-						  	agent: agent,
-						  	timeout: 10000,
-						  	followRedirect: true,
-						  	maxRedirects: 10,
-						  	body: "name=john"
+							url:"http://m.nhaccuatui.com/bai-hat/"+songname
 						};
 						request(options,function(error,response,body){
 								if (error) throw new Error(error);
 								else{
 									var $ = cheerio.load(body);
-									var linkmp3 = $('.download p a').attr('href');
-									res.send(linkmp3);
+									var tensong = $('.player-song img').attr('alt');
+									var casi = $('.player-song a ').first().text();
+									var options = {
+										method: "GET",
+										url:"http://jginggong.nhutuit.com/jOut.ashx?code=test&k=Faded&h=nhaccuatui.com",
+										qs:{
+											code:'1',
+											k:tensong,
+											h:'nhaccuatui.com'
+										}
+									};
+									request(options,function(error,response,body){
+										var data = JSON.parse(body);
+										for(key in data) {
+										  if(data.hasOwnProperty(key)) {
+										    if(data[key].Title == tensong && data[key].Artist == casi){
+										    	res.redirect(data[key].UrlJunDownload);
+										    }
+										  }
+										}
+									});
 								}
 						});
 				}else{
@@ -492,20 +503,4 @@ router.get("/jav",function(req,res){
 		res.send(gethd);
 	})
 });
-router.get("/test",function(req,res){
-	var proxy = 'http://202.167.248.186:80';
-	var agent = new HttpsProxyAgent(proxy);
-	request({
-	  uri: "http://www.nhaccuatui.com/bai-hat/hello-adele.EVx2IlMWOHQz.html",
-	  method: "GET",
-	  agent: agent,
-	  timeout: 10000,
-	  followRedirect: true,
-	  maxRedirects: 10,
-	  body: "name=john"
-	}, function(error, response, body) {
-	    res.send(body);
-	});
-})
-
 module.exports = router;
