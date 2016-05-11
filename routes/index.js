@@ -431,7 +431,10 @@ router.get("/download/song/:songName",function(req,res){
 								else{
 									var $ = cheerio.load(body);
 									var tensong = $('.player-song img').attr('alt');
+									console.log(tensong);
+
 									var casi = $('.player-song a ').first().text();
+																		console.log(casi);
 									var options = {
 										method: "GET",
 										url:"http://jginggong.nhutuit.com/jOut.ashx?code=test&k=Faded&h=nhaccuatui.com",
@@ -443,13 +446,15 @@ router.get("/download/song/:songName",function(req,res){
 									};
 									request(options,function(error,response,body){
 										var data = JSON.parse(body);
+										console.log(casi);
 										for(key in data) {
 										  if(data.hasOwnProperty(key)) {
-										    if(data[key].Title == tensong && data[key].Artist == casi){
+										    if(data[key].Artist ===  casi){
 										    	res.redirect(data[key].UrlJunDownload);
 										    }
 										  }
 										}
+										res.jsonp({message:"error"})
 									});
 								}
 						});
@@ -479,6 +484,11 @@ router.get("/test/bai-hat/:songName",function(req,res){
 				var link = text.substring(0,gettext-2);
 				var options = {
 					method:"GET",
+					headers: 
+					{
+						'User-Agent': 'Super Agent/0.0.1',
+						'Content-Type': 'text/html;charset=UTF-8'
+					},
 					url:link
 				};
 				request(options,function(error,response,body){
