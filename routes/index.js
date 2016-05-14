@@ -423,29 +423,30 @@ router.get("/download/song/:songName",function(req,res){
 				// res.setHeader('Content-Type', 'application/json');
 				// console.log('test',data.error_message);
 				// res.redirect(data.data.stream_url);
-				var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key1=');
-				var test2 = body.indexOf('player.peConfig.defaultIndex');
-				var text = body.substring(test,test2);
-				var gettext = text.indexOf('\n');
-				var link = text.substring(0,gettext-2);
-				var options = {
-					method:"GET",
+				// var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key1=');
+				// var test2 = body.indexOf('player.peConfig.defaultIndex');
+				// var text = body.substring(test,test2);
+				// var gettext = text.indexOf('\n');
+				// var link = text.substring(0,gettext-2);
+				// var options = {
+					// method:"GET",
 					// headers: 
 					// {
 					// 	'User-Agent': 'Super Agent/0.0.1',
 					// 	'Content-Type': 'text/html;charset=UTF-8'
 					// },
-					url:link
-				};
-				request(options,function(error,response,body){
-					if (error) throw new Error(error);
-					else{
-						var $ = cheerio.load(body);
-						var textmp3= $('location').html();
-						var mp3 = textmp3.substring(textmp3.indexOf('http://'),textmp3.indexOf('.mp3')+4);
-						res.redirect(mp3);
-					}
-				});
+					// url:link
+				// };
+				// request(options,function(error,response,body){
+					// if (error) throw new Error(error);
+				// 	else{
+				// 		var $ = cheerio.load(body);
+				// 		var textmp3= $('location').html();
+				// 		var mp3 = textmp3.substring(textmp3.indexOf('http://'),textmp3.indexOf('.mp3')+4);
+				// 		res.redirect(mp3);
+				// 	}
+				// });
+				res.send(body);
 			}
 	});
 });
