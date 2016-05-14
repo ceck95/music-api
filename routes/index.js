@@ -412,55 +412,40 @@ router.get('/mp3',function(req,res){
 });
 router.get("/download/song/:songName",function(req,res){
 	var songname = req.params.songName;
-	var getid = songname.substring(songname.indexOf('.')+1,songname.length - 5);
 	var options = {
 		method: "GET",
-		url:"http://www.nhaccuatui.com/download/song/"+getid
+		url:"http://www.nhaccuatui.com/bai-hat/"+songname
 	}
 	request(options,function(error,response,body){
 			if (error) throw new Error(error);
 			else{
-				var data = JSON.parse(body);
-				if(data.error_message != 'Success'){
-						var options = {
-							method: "GET",
-							url:"http://m.nhaccuatui.com/bai-hat/"+songname
-						};
-						request(options,function(error,response,body){
-								if (error) throw new Error(error);
-								else{
-									var $ = cheerio.load(body);
-									var tensong = $('.player-song img').attr('alt');
-									console.log(tensong);
-
-									var casi = $('.player-song a ').first().text();
-																		console.log(casi);
-									var options = {
-										method: "GET",
-										url:"http://jginggong.nhutuit.com/jOut.ashx?code=test&k=Faded&h=nhaccuatui.com",
-										qs:{
-											code:'1',
-											k:tensong,
-											h:'nhaccuatui.com'
-										}
-									};
-									request(options,function(error,response,body){
-										var data = JSON.parse(body);
-										console.log(casi);
-										for(key in data) {
-										  if(data.hasOwnProperty(key)) {
-										    if(data[key].Artist ===  casi){
-										    	res.redirect(data[key].UrlJunDownload);
-										    }
-										  }
-										}
-										res.jsonp({message:"error"})
-									});
-								}
-						});
-				}else{
-					res.redirect(data.data.stream_url);
-				}
+				// var data = JSON.parse(body);
+				// res.setHeader('Content-Type', 'application/json');
+				// console.log('test',data.error_message);
+				// res.redirect(data.data.stream_url);
+				var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key1=');
+				var test2 = body.indexOf('player.peConfig.defaultIndex');
+				var text = body.substring(test,test2);
+				var gettext = text.indexOf('\n');
+				var link = text.substring(0,gettext-2);
+				var options = {
+					method:"GET",
+					// headers: 
+					// {
+					// 	'User-Agent': 'Super Agent/0.0.1',
+					// 	'Content-Type': 'text/html;charset=UTF-8'
+					// },
+					url:link
+				};
+				request(options,function(error,response,body){
+					if (error) throw new Error(error);
+					else{
+						var $ = cheerio.load(body);
+						var textmp3= $('location').html();
+						var mp3 = textmp3.substring(textmp3.indexOf('http://'),textmp3.indexOf('.mp3')+4);
+						res.redirect(mp3);
+					}
+				});
 			}
 	});
 });
