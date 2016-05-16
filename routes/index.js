@@ -356,7 +356,7 @@ router.get('/mp3',function(req,res){
 					  	var bd = gettext.indexOf('.');
 					  	var link = gettext.substring(bd+1,gettext.length-5);
 					  	var url = req.protocol + '://' + req.get('host');
-						return url+'/download/song/'+gettext;
+						return 'http://download.music.nhutuit.com/download/song/'+gettext;
 						// return url+'test/bai-hat/'+gettext;
 
 						// var async = require('asyncawait/async');
