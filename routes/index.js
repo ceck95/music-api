@@ -428,25 +428,29 @@ router.get("/download/song/:songName",function(req,res){
 				var text = body.substring(test,test2);
 				var gettext = text.indexOf('\n');
 				var link = text.substring(0,gettext-2);
-				var options = {
-					method:"GET",
-					headers: 
-					{
-						'User-Agent': 'Super Agent/0.0.1',
-						'Content-Type': 'text/html;charset=UTF-8'
-					},
-					url:link
-				};
-				request(options,function(error,response,body){
-					if (error) throw new Error(error);
-					else{
-						var $ = cheerio.load(body);
-						var textmp3= $('location').html();
-						var mp3 = textmp3.substring(textmp3.indexOf('http://'),textmp3.indexOf('.mp3')+4);
-						res.redirect(mp3);
-					}
-				});
-				// res.send(body);
+				// console.log(link);
+				if(link == ''){
+					res.send(body);
+				}else{
+					var options = {
+						method:"GET",
+						headers: 
+						{
+							'User-Agent': 'Super Agent/0.0.1',
+							'Content-Type': 'text/html;charset=UTF-8'
+						},
+						url:link
+					};
+					request(options,function(error,response,body){
+						if (error) throw new Error(error);
+						else{
+							var $ = cheerio.load(body);
+							var textmp3= $('location').html();
+							var mp3 = textmp3.substring(textmp3.indexOf('http://'),textmp3.indexOf('.mp3')+4);
+							res.redirect(mp3);
+						}
+					});
+				}
 			}
 	});
 });
