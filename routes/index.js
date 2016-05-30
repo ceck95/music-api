@@ -8,6 +8,7 @@ var htmlToJson = require('html-to-json');
 var jsdom = require("jsdom");
 var rp = require('request-promise');
 var HttpsProxyAgent = require('http-proxy-agent');
+var parseString = require('xml2js').parseString;
 // (function () {
 //   'use strict';
 // jsdom.env({
@@ -159,19 +160,19 @@ request(options,function(error,response,body){
 					htmlToJson.parse(content, function () {
 					  return this.map('.row', {
 					  'TenMV': function ($name) {	
-					    return $name.find('.txt-80 a').text();
+					    return $name.find('.txt-40 a').text();
 					  },
 					  'CaSi': function ($cs) {	
-					    return $cs.find('.txt-80 img').attr('alt');
+					    return $cs.find('.txt-40 img').attr('alt');
 					  },
 					 'ImageMV': function ($cs) {
-					    return $cs.find('.img-80 a img').attr('src');
+					    return $cs.find('.img-40 a img').attr('src');
 					  },
 					  'Listener': function ($cs){
-					  	return $cs.find('.txt-80 span').text();
+					  	return $cs.find('.txt-40 span').text();
 					  },
 					  'LinkMV': function ($cs) {	
-					  	var vitri = $cs.find('.img-80 a').attr('href');
+					  	var vitri = $cs.find('.img-40 a').attr('href');
 					  	var len = vitri.length;;
 					  	var url = vitri.substring(30,len-5);
 					  	var kitu = url.indexOf(".");
@@ -218,21 +219,21 @@ request(options,function(error,response,body){
 			htmlToJson.parse(content, function () {
 			  return this.map('.row', {
 			  'TenMV': function ($name) {	
-			    return $name.find('.txt-80 a').text();
+			    return $name.find('.txt-40 a').text();
 			  },
 			  'CaSi': function ($cs) {	
-			    return $cs.find('.txt-80 img').attr('alt');
+			    return $cs.find('.txt-40 img').attr('alt');
 			  },
 	  		 'Listener': function ($cs){
-			  	var listener =  $cs.find('.txt-80 span').text();
+			  	var listener =  $cs.find('.txt-40 span').text();
 			  	var sum = listener.trim();
 			  	return sum;
 			  },
 			 'ImageMV': function ($cs) {
-			    return $cs.find('.img-80 a img').attr('src');
+			    return $cs.find('.img-40 a img').attr('src');
 			  },
 			  'LinkMV': function ($cs) {	
-			  	var vitri = $cs.find('.img-80 a').attr('href');
+			  	var vitri = $cs.find('.img-40 a').attr('href');
 			  	var len = vitri.length;;
 			  	var url = vitri.substring(30,len-5);
 			  	var kitu = url.indexOf(".");
@@ -355,7 +356,7 @@ router.get('/mp3',function(req,res){
 					  	var gettext = text.substring(32,text.length);
 					  	var bd = gettext.indexOf('.');
 					  	var link = gettext.substring(bd+1,gettext.length-5);
-					  	var url = req.protocol + '://' + req.get('host');
+					  	var url = req.protocol + '://download.' + req.get('host');
 						return url+'/download/song/'+gettext;
 						// return url+'test/bai-hat/'+gettext;
 
@@ -490,17 +491,99 @@ router.get("/test/bai-hat/:songName",function(req,res){
 			}
 	});
 });
-router.get("/jav",function(req,res){
-	var id = req.query.id;
+router.get('/api/:playlist',function(req,res){
+	var playlist = req.params.playlist;
+	var tensong = req.query.tensong;
+	var numberpage = 2;
+	var html = [];
+
+	(function next(page) {
+		if (page == numberpage + 1) {
+			var content = html.join(' ');
+			htmlToJson.parse(content, function () {
+			  return this.map('.row', {
+			  'TenPlaylist': function ($name) {	
+			    return $name.find('.txt-40 a').text();
+			  },
+			  'Luotnghe': function ($cs) {	
+			    return $cs.find('.txt-40 img').attr('alt');
+			  },
+			 'HinhPlaylistCoNho': function ($cs) {
+			    return $cs.find('.img-40 a img').attr('src');
+			  },
+			  'HinhPlaylistCoLon': function ($cs) {
+			    var hinh = $cs.find('.img-40 a img').attr('src');
+			    var hinh_final = hinh.substring(0,hinh.indexOf('_46.jpg'));
+			    return hinh_final+".jpg";
+
+			  },
+			  'LinkMV': function ($cs) {	
+			  	var vitri = $cs.find('.img-40 a').attr('href');
+			  	var len = vitri.length;;
+			  	var url = vitri.substring(33,len);
+			  	var kitu = url.indexOf(".");
+			  	var dodai = url.length;
+			  	var code = url.substring(kitu+1,dodai);
+			  	var urlhost = req.protocol + '://download.' + req.get('host');
+			    return urlhost+"/playlist/"+url;
+			  },
+			});
+			}).done(function (items) {
+			  res.json(items); 
+			}, function (err) {
+			  res.json({'status':'Not found'});
+			});
+			return;
+		}
+
+		var options = {
+			method: "GET",
+			url: "http://m.nhaccuatui.com/tim-kiem/playlist",
+			qs:{
+				g:playlist,
+				s:playlist,
+				page: page
+			}
+		};
+
+		rp(options).then(function (body) {
+	       html.push(body);
+	       next(page + 1);
+	    })
+	    .catch(function (err) {
+	        console.log(err);
+	    });
+
+	})(1);	
+});
+router.get('/playlist/:playlistname',function(req,res){
+	var link = req.params.playlistname;
 	var options = {
-		method: "GET",
-		url: "http://javhd.com/en/id/"+id
+		method:"GET",
+		url:"http://nhaccuatui.com/playlist/"+link
 	}
-	rp(options).then(function(body){
-		var $ = cheerio.load(body);
-		var hd = $('#report-body .sample img').attr('src');
-		var gethd = hd.substring(29,hd.indexOf('-p/images'));
-		res.send(gethd);
-	})
+	request(options,function(err,response,body){
+		var test = body.indexOf('http://www.nhaccuatui.com/flash/xml?html5=true&key2=');
+		var test2 = body.indexOf('player.peConfig.curPlayIndex');
+		var text = body.substring(test,test2);
+		var gettext = text.indexOf('\n');
+		var link2 = text.substring(0,gettext-2);
+		var options = {
+			method:"GET",
+			headers: 
+			{
+				'User-Agent': 'Super Agent/0.0.1',
+				'Content-Type': 'text/html;charset=UTF-8'
+			},
+			url:link2
+		};
+		request(options,function(error,response,body){
+				var filtered = "";
+				parseString(body, {trim: true}, function (err, result) {
+					filtered = result['tracklist']['track'];
+				    res.jsonp(filtered);
+				});
+		});
+	});
 });
 module.exports = router;
