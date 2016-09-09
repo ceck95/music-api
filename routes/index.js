@@ -3,7 +3,7 @@
  * @Date:   30-05-16 20:20:23
  * @Email:  tranvannhut4495@gmail.com
 * @Last modified by:   nhutdev
-* @Last modified time: 09-09-16 10:41:26
+* @Last modified time: 09-09-16 11:12:6
  */
 
 
@@ -577,22 +577,16 @@ router.get('/api/:playlist', function(req, res) {
       htmlToJson.parse(content, function() {
         return this.map('.row', {
           'TenPlaylist': function($name) {
-            return $name.find('.txt-80 a').text();
+            return $name.find('.txt-40 a').text();
           },
           'Luotnghe': function($cs) {
-            return $cs.find('.txt-80 img').attr('alt');
+            return $cs.find('.txt-40 img').attr('alt');
           },
           'HinhPlaylistCoNho': function($cs) {
-            return $cs.find('.img-80 a img').attr('src');
-          },
-          'HinhPlaylistCoLon': function($cs) {
-            var hinh = $cs.find('.img-80 a img').attr('src');
-            var hinh_final = hinh.substring(0, hinh.indexOf('_46.jpg'));
-            return hinh_final + ".jpg";
-
+            return $cs.find('.img-40 a img').attr('src');
           },
           'LinkMV': function($cs) {
-            var vitri = $cs.find('.img-80 a').attr('href');
+            var vitri = $cs.find('.img-40 a').attr('href');
             var len = vitri.length;;
             var url = vitri.substring(33, len);
             var kitu = url.indexOf(".");
