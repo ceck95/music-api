@@ -3,10 +3,10 @@
  * @Date:   30-05-16 20:20:23
  * @Email:  tranvannhut4495@gmail.com
 * @Last modified by:   nhutdev
-* @Last modified time: 09-09-16 11:12:6
+* @Last modified time: 28-09-16 11:18:3
  */
 
-
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -63,7 +63,7 @@ router.get('/', function(req, res) {
 });
 router.post('/api', function(req, res) {
   var json = JSON.parse(JSON.stringify(req.body));
-  var data = json.keyword
+  var data = json.keyword;
     // console.log(data)
     // var q = new Query({ keyword: data });
     // q.save();
@@ -77,7 +77,9 @@ router.post('/api', function(req, res) {
     }
   };
   request(options, function(error, response, body) {
-    if (error) throw new Error(error);
+    if (error) {
+      throw new Error(error);
+    }
     else {
       // res.setHeader('Content-Type', 'application/json');
       // var a = JSON.parse(req.body);
@@ -125,7 +127,9 @@ router.get('/search/:textSearch', function(req, res) {
     }
   };
   request(options, function(error, response, body) {
-    if (error) throw new Error(error);
+    if (error) {
+      throw new Error(error);
+    }
     else {
       res.setHeader('Content-Type', 'application/json');
       res.send(body);
@@ -150,7 +154,9 @@ router.get('/mv', function(req, res) {
 
   };
   request(options, function(error, response, body) {
-    if (error) throw new Error(error);
+    if (error) {
+      throw new Error(error);
+    }
     else {
       var $ = cheerio.load(body);
       var a = $('.note-Result').text();

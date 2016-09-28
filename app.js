@@ -1,3 +1,13 @@
+/**
+* @Author: Tran Van Nhut <nhutdev>
+* @Date:   26-08-16 17:37:13
+* @Email:  tranvannhut4495@gmail.com
+* @Last modified by:   nhutdev
+* @Last modified time: 28-09-16 11:5:52
+*/
+
+
+
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -15,11 +25,11 @@ var cors = require('cors');
 
 // var options = { method: 'GET',
 //   url: 'http://j.ginggong.com/jOut.ashx',
-//   qs: 
+//   qs:
 //    { code: '7868d0b1-da9a-494c-80cd-5fcde436b0f2',
 //      k: 'n',
 //      h: 'nhaccuatui.com' },
-//   headers: 
+//   headers:
 //    { 'postman-token': 'fb95d91d-2d50-f9ca-4fcd-4ceb39f78284',
 //      'cache-control': 'no-cache',
 //      'content-type': 'multipart/form-data; boundary=---011000010111000001101001' } };
@@ -32,7 +42,7 @@ var cors = require('cors');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'hjs');
-// app.set ('view engine', 'html'); 
+// app.set ('view engine', 'html');
 app.set('layout', 'layout');
 app.engine('html', require('hogan-express'));
 app.set('view engine', 'html');
@@ -85,5 +95,5 @@ app.use(function(err, req, res, next) {
     });
 });
 
-app.listen(3000);
+app.listen(2524);
 module.exports = app;
